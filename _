@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <memory.h>
+#include "aa.h"
+char line1[4];
+char line2[160];
+char line3[160];
+
+int aa[3]={1101,2356,1000};
+char lin2[40];
+
+int xx1(char line1[4],int aa[3],FILE *fp_out);
+void xx2(char line2[160],char lin2[40],FILE *fp_out);
+void xx3(char line3[160],FILE *fp_out);
+
+char head1[24]="@A00251:28:H3YV7DSXX:4:";
+char head2[17]=" 2:N:0:TAAGTGGC";
+
+int read()
+{FILE *fp_in,*fp_out;
+fp_out=fopen("zip.bin","wb");
+fwrite(head1, 1 , sizeof(head1) , fp_out);fputc('\n',fp_out); fwrite(head2 , 1 , sizeof(head2) , fp_out);fputc('\n',fp_out); 
+
+
+if((fp_in=fopen("test.fastq","rb")) != NULL)
+while(!feof(fp_in))
+{   fseek(fp_in,23,1);
+    fread(line1,18,1,fp_in);
+    fseek(fp_in,13,1);//char dan[1];fread(dan,1,1,fp_in);printf("%d",dan[0]);
+    if (!(xx1(line1,aa,fp_out)))break;
+
+    fputc('\n',fp_out); printf("\n");
+//    printf("%s\n",line1);
+//#################
+    fgets(line2,160,fp_in);
+    xx2(line2,lin2,fp_out);
+
+    fputc('\n',fp_out); printf("\n");
+//   printf("%s\n",line2);
+//###################
+    fseek(fp_in,3,1);
+    fgets(line3,160,fp_in);
+    xx3(line3,fp_out);
+
+    fputc('\n',fp_out); printf("\n");
+//    fread(line1,4,1,fp_in);
+  //  printf("%s",line3);   
+
+}
+fclose(fp_in);
+fclose(fp_out);
+ar aaaa[1];fread(aaaa,1,1,fp_in);printf("最后的字符：%d",aaaa[0]);
+return 0;}
+
+int xx1(char line1[4],int aa[3],FILE *fp_out)
+{char *p=line1;
+char lin_1[6];char *q=lin_1;
+
+int a[3];int *m=a;
+   while(*p != ' ')
+   { if(*p != ':'){*q=*p;p++;q++;}
+     else {*m=zhuan_zheng(lin_1);m++;p++;memset(lin_1,0,sizeof(lin_1));q=lin_1;}
+   }
+
+*m=zhuan_zheng(lin_1);
+//for(int i=0;i<3;i++)printf("%d###\n",a[i]);
+short int x=a[1];printf("%d",x);fwrite(&x,1,sizeof(x),fp_out);
+int y=a[2]-aa[2];aa[2]=a[2];char y2;printf("_______%d_____________",y);
+if(y < 0){y=-1;printf("#%d#%d",char(y),aa[2]);  y2=char(y);fwrite(&y2,1,sizeof(y2),fp_out);fwrite(&aa[2],1,sizeof(int),fp_out);}
+if(y > 0){printf("#%d",char(y));y2=char(y);fwrite(&y2,1,sizeof(y2),fp_out);
+if(line1)return 1;
+else return 0;
+}
+
+
+//////////////yu_dao_zui_da_zhi_de_cao_zuo
+
+//if(aa[0]%100 == 24){aa[0]=a[0];}
+///////////
+//if(aa[2] != a[2])
+//{y=(y | (('1'-48) << 6));aa[2]=a[2];}
+//if(aa[0] != a[0])
+//{y=(y | (('1'-48) << 7));aa[0]=a[0];}
+//printf("%d,%d,",x,y);
+//fwrite(&x,1,sizeof(x),fp_out);fwrite(&y,1,1,fp_out);if(*y_qishi != 1){fwrite(y_qishi,1,sizeof(x),fp_out);
+//printf ("%d",*y_qishi);}
+}
+
+
+
+int atcg(char a)
+{if(a=='A')
+return 0;
+if(a=='T')
+return 1;
+if(a=='C')
+return 2;
+if(a=='G')
+return 3;
+else return 4;
+}
+
+
+void xx2(char line2[160],char lin2[40],FILE *fp_out)
+{char *p=line2;
+char *q=lin2;
+ while (*p)
+ {*q=(atcg(*p) << 6);p++;  //fu_shu_cun_de_shi_BU_MA
+  *q=((atcg(*p) << 4) | *q);p++; 
+  *q=((atcg(*p) << 2) | *q);p++; 
+  *q=(atcg(*p) | *q);p++;fwrite(q,1,1,fp_out);  printf("#%d#",*q);
+ }
+}
+void xx3(char line3[160],FILE *fp_out)
+{char *p=line3,*q=line3;
+unsigned int num=0;
+char num_;
+//for(int i=0;i<20;i++)printf("%d",aa[i]);
+while(*p)
+ { if(*p == *q && num < 100)
+      {num++;
+      p++;}
+   else
+      {num_=num; fwrite(&num,1,1,fp_out);printf("#%d_",num_);
+      fwrite(q,1,1,fp_out);printf("%d#",*q);
+      *q=*p;num=0;}
+ }
+}
+
+
+int main()
+{
+read();
+
+return 0;}
